@@ -1,4 +1,5 @@
 const
+  C = require('../constants.js'),
   puppeteer = require('puppeteer'),
   Scrapper = require('./base.js'),
   utils = require('../utils/utils.js');
@@ -32,7 +33,8 @@ module.exports = class UCLAScrapper extends Scrapper {
       
       return subjects;
     });
-        
-    return {"subjects": subjects};
+      
+    let key = C.SUBJECTS_KEY;
+    return {key: subjects};
   }
 }

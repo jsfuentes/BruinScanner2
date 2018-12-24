@@ -3,21 +3,27 @@ const
   conf = require('./config.js'),
   Jscrape = require('./scrape.js'),
   UCLABase = require('./scrappers/UCLABase.js'),
+  assert = require('assert'),
   utils = require('./utils/utils.js');
 
-async function subjects(db, secrets, headless=true) {
+async function getSubjects(db, secrets, headless=true) {
   const uclaBase = new UCLABase(headless, secrets);
   const subjects = await uclaBase.scrape();
   await db.insertOne(subjects);
+  await uclaBase.close();
 }
 
-//SAMPLE USAGE OF JScrape
 async function main(headless=true) {
   const secrets = await utils.readSecrets(); 
   const subjectsDB = await utils.connectToDB(secrets, C.SUBJECTS_DB);
   
-  // await subjectsDB.find()
-  await subjects(subjectsDB, secrets, headless);
+  let subjectsArr = await subjectsDB.find().toArray()
+  if (subjectsArr.length === 0 ) {
+    await getSubjects(subjectsDB, secrets, headless);
+    subjectsArr = await subjectsDB.find().toArray();
+  }
+  assert(subjectsArr.length !== 0);
+  const subjects = subjectsArr[0][C.SUBJECTS_KEY];
   
   // keysToScrape = ["goguardian", "nuro"];
   // for (let i = 0; i < keysToScrape.length; i++) {
