@@ -26,9 +26,9 @@ async function readSecrets() {
 
 async function connectToDB(secrets, name) {
   const db = await MongoClient.connect(secrets['db_uri'], { useNewUrlParser: true });
-
-  const dbo = db.db("companies");
-  return dbo.collection(name);
+  
+  const dbo = db.db("ucla_classes");
+  return  dbo.collection(name);
 }
 
 //YES I AM NO COMBINING THESE FUNCTION, WHY? YOU WOULD HAVE TO MAKE A CONSTANT RIGHT, WELL THE CONSTANT IS THIS FUNCTION. DRY ISNT GOD
@@ -48,4 +48,4 @@ function moneyToNumber(moneyStr) {
   return parseInt(moneyStr.replace(/[^0-9.-]+/g, ''));
 }
 
-module.exports = {delay, randomDelay, readSecrets, connectToData, connectToSanitizedData, connectToBackup, moneyToNumber};
+module.exports = {delay, randomDelay, readSecrets, connectToDB, connectToData, connectToSanitizedData, connectToBackup, moneyToNumber};

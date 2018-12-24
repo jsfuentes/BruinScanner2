@@ -4,7 +4,7 @@ const
   utils = require('./utils/utils.js');
   
 module.exports = class Jscrape {
-  constructor(key, headless, secrets) {
+  constructor(headless, secrets, key=null) {
     this.fails = {};
     this.wins = {};
     this.key = key;

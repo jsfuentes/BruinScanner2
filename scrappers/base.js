@@ -2,10 +2,10 @@ const
   puppeteer = require('puppeteer');
     
 module.exports = class Scrapper {
-  constructor(company, headless, secrets) {
-    this.company = company;
+  constructor(headless, secrets, key=null) {
     this.secrets = secrets;
     this.headless = headless;
+    this.key = key;
   }
   
   async setup() {
@@ -16,7 +16,7 @@ module.exports = class Scrapper {
       for (let i = 0; i < msg.args.length; ++i)
         console.log(`${i}: ${msg.args[i]}`);
     });
-    this.page.setDefaultNavigationTimeout(60000); //increase timeout to 1 minutes
+    this.page.setDefaultNavigationTimeout(30000); //increase timeout to 30 seconds
   }
   
   async scrape() {
