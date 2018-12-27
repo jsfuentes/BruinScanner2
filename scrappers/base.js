@@ -25,7 +25,7 @@ module.exports = class Scrapper {
   
   async close() {
     await this.browser.close();
-  }  
+  }
   
   async scrollPage() {
     await this.page.evaluate(_ => {

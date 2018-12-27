@@ -4,7 +4,7 @@ const
   utils = require('./utils/utils.js');
   
 module.exports = class Jscrape {
-  constructor(headless, secrets, key=null) {
+  constructor(key, headless, secrets) {
     this.fails = {};
     this.wins = {};
     this.key = key;
@@ -13,7 +13,7 @@ module.exports = class Jscrape {
     this.allInfo = {};
   }
   
-  async getkeyInfo(toScrape=[C.SCRAPE_ALL]) {
+  async scrape(toScrape=[C.SCRAPE_ALL]) {
     for(let i = 0; i < conf.SCRAPPERS.length; i++) {
       let scrapeDef = conf.SCRAPPERS[i];
       let scrapeName = scrapeDef[0];
@@ -22,14 +22,12 @@ module.exports = class Jscrape {
       
       //TODO: Find a way to do this in parallel with promises
       if(toScrape[0] === C.SCRAPE_ALL || toScrape.indexOf(scrapeName) != -1) {
-        await this.scrape(scrapeName, scrapeClass, scrapeVersion);
+        await this.getKeyInfo(scrapeName, scrapeClass, scrapeVersion);
       }
     }
     
     this.allInfo = {
       "key": this.key,
-      "fails": this.fails,
-      "wins": this.wins,
       ...this.allInfo 
     }
     
@@ -37,20 +35,18 @@ module.exports = class Jscrape {
     return this.allInfo;
   }
   
-  //collects wins, fails, and info 
-  async scrape(scrapeName, scrapeClass, scrapeVersion) {
-    const scrapper = new scrapeClass(this.key, this.headless, this.secrets[scrapeName]);
+  //collects info ` `
+  async getKeyInfo(scrapeName, scrapeClass, scrapeVersion) {
+    const scrapper = new scrapeClass(this.headless, this.secrets[scrapeName], this.key);
     //TODO: Add date scrapped to dict
     try {
       let data = await scrapper.scrape();
-      this.wins[scrapeName] = scrapeVersion;
       this.allInfo = {
         ...this.allInfo,
         ...data
       }
     } catch (err) {
       console.log("Error scrapping", scrapeName, ":", err);
-      this.fails[scrapeName] = scrapeVersion;
       await scrapper.close();
     }
   }

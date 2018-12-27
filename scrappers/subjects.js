@@ -4,12 +4,11 @@ const
   Scrapper = require('./base.js'),
   utils = require('../utils/utils.js');
 
-const UCLA_CLASS_SCHEDULE_URL = "https://sa.ucla.edu/ro/public/soc"
+const UCLA_CLASS_SCHEDULE_URL = "https://sa.ucla.edu/ro/public/soc";
 
-module.exports = class UCLAScrapper extends Scrapper {
+module.exports = class SubjectScrapper extends Scrapper {
   constructor(headless, secrets, key=null) {
     super(headless, secrets, key);
-    
   }
   
   async scrape() {
@@ -34,7 +33,6 @@ module.exports = class UCLAScrapper extends Scrapper {
       return subjects;
     });
       
-    let key = C.SUBJECTS_KEY;
-    return {key: subjects};
+    return {[C.SUBJECTS_KEY]: subjects};
   }
 }

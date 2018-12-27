@@ -2,54 +2,58 @@ const
   C = require('./constants.js'),
   conf = require('./config.js'),
   Jscrape = require('./scrape.js'),
-  UCLABase = require('./scrappers/UCLABase.js'),
+  SubjectScrapper = require('./scrappers/subjects.js'),
   assert = require('assert'),
   utils = require('./utils/utils.js');
 
-async function getSubjects(db, secrets, headless=true) {
-  const uclaBase = new UCLABase(headless, secrets);
-  const subjects = await uclaBase.scrape();
-  await db.insertOne(subjects);
-  await uclaBase.close();
+async function getSubjects(secrets, headless = true) {
+  const db = await utils.connectToDB(secrets, C.SUBJECTS_DB);
+
+  let arr = await db.find().toArray();
+  if (arr.length === 0) { //scrape if not already in db
+    const subjectScrapper = new SubjectScrapper(headless, secrets);
+    const subjects = await subjectScrapper.scrape();
+    await db.insertOne(subjects);
+    await subjectScrapper.close();
+    arr = await db.find().toArray();
+  }
+  assert(arr.length !== 0);
+
+  const subjects = arr[0][C.SUBJECTS_KEY];
+  return subjects;
 }
 
-async function main(headless=true) {
-  const secrets = await utils.readSecrets(); 
-  const subjectsDB = await utils.connectToDB(secrets, C.SUBJECTS_DB);
-  
-  let subjectsArr = await subjectsDB.find().toArray()
-  if (subjectsArr.length === 0 ) {
-    await getSubjects(subjectsDB, secrets, headless);
-    subjectsArr = await subjectsDB.find().toArray();
+async function main(headless = true) {
+  const secrets = await utils.readSecrets();
+  const subjects = await getSubjects(secrets, headless);
+  const classDB = await utils.connectToDB(secrets, C.CLASSES_DB);
+  console.log({conf, C});
+  for (let i = 0; i < subjects.length; i++) {
+    subject = subjects[i];
+    console.log("Scraping", subject);
+
+    let subjectDocs = await classDB.find({
+      [C.SUBJECTS_KEY]: subject
+    }).toArray();
+    if (subjectDocs.length == 0) { //TODO: check version number too
+      try {
+        const jscrape = new Jscrape(subject, headless, secrets);
+        const data = await jscrape.scrape();
+        await classDB.insertOne(data);
+      } catch (err) {
+        console.log("Failed to scrape", subject, "with", err);
+      }
+
+      await utils.randomDelay();
+      await utils.randomDelay();
+    }
   }
-  assert(subjectsArr.length !== 0);
-  const subjects = subjectsArr[0][C.SUBJECTS_KEY];
-  
-  // keysToScrape = ["goguardian", "nuro"];
-  // for (let i = 0; i < keysToScrape.length; i++) {
-  //   company = keysToScrape[i];
-  //   console.log("Scraping", company);
-  // 
-  //   let companyDocs = await dbData.find({"company": company}).toArray();
-  //   if(companyDocs.length == 0) {
-  //     try {
-  //       const jscrape = new Jscrape(company, headless, secrets);
-  //       const data = await jscrape.getkeyInfo();
-  //       await dbData.insertOne(data);
-  //     } catch (err) {
-  //       console.log("Failed to scrape", company, "with", err);
-  //     }
-  // 
-  //     await utils.randomDelay();
-  //     await utils.randomDelay();
-  //   }
-  // }
 
 }
 
 main(false)
   .then(() => {
-    console.log("COMPLETE"); 
+    console.log("COMPLETE");
     // process.exit();
   })
   .catch(console.error);

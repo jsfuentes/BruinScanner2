@@ -1,10 +1,10 @@
 const
   C = require('./constants.js'),
-  Glassdoor = require('./scrappers/glassdoor.js'); //SAMPLE
+  ClassScrapper = require('./scrappers/classes.js'); //SAMPLE
   
 module.exports = {
   //Key(string name), the scrappers class, and the version
   SCRAPPERS: [
-    [C.GLASSDOOR, Glassdoor, 1], //SAMPLE
-  ],
-}
+    [C.CLASSES, ClassScrapper, 1] //SAMPLE
+  ]
+};
