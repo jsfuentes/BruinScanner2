@@ -6,7 +6,6 @@ const
   utils = require('../utils/utils.js');
 
 const CLASS_BASE_URL = "https://sa.ucla.edu/ro/Public/SOC/Results";
-//?t=19W&sBy=subject&sName=Asian&subj=ASIAN&crsCatlg=Enter+a+Catalog+Number+or+Class+Title+%28Optional%29&catlg=&cls_no=&btnIsInIndex=btn_inIndex
 
 module.exports = class Classes extends Scrapper {
   constructor(headless, secrets, key) {
@@ -16,6 +15,32 @@ module.exports = class Classes extends Scrapper {
   }
   
   async scrape() {
+    const url = this.generateUrl();
+    
+    await this.setup();
+    await this.page.goto(url);
+
+    const expandAllS = "#expandAll";
+    await this.page.waitForSelector(expandAllS);
+    await Promise.all([
+      this.page.click(expandAllS),
+      this.waitForNetworkIdle(this.page), // similar to 'networkidle0'
+    ]);
+    console.log("Network Finished"); //assumption that all divs will be loaded after network idle for 1 second
+    
+    // //click needed classes
+    // const classBlockS = '.head > a';
+    // await this.page.waitForSelector(classBlockS);
+    // const classArr = await this.page.$$(classBlockS);
+    // for (let i = 0; i < classArr.length; i++) {
+    //   const curClassNode = classArr[i];
+    //   const title = await this.page.evaluate(e => e.textContent, curClassNode);
+    //   // Example
+    // 
+    // }
+  }
+  
+  generateUrl() {
     const params = {
       "t": C.TERM,
       "sBy": "subject",
@@ -27,9 +52,8 @@ module.exports = class Classes extends Scrapper {
       "btnIsInIndex": "btn_inIndex",
     };
     const url = CLASS_BASE_URL + "?" + this.encodeQueryData(params);
-    console.log(url);
-    return {"url": url};
-  } 
+    return url;
+  }
   
   encodeQueryData(data) {
      const ret = [];
@@ -50,7 +74,7 @@ module.exports = class Classes extends Scrapper {
     let subj = subject;
     subj = subj.replace(/ /g, "+");
     
-    //replace subj with in () if needed
+    //UCLA uses the subString in () if there is one, this does too
     let subMatch = subj.match(/\(.*\)/);
     if (subMatch !== null) {
       subj = subMatch[0]; //get match
@@ -59,4 +83,41 @@ module.exports = class Classes extends Scrapper {
     
     return subj;
   }
+  
+  //copied from stackoverflow
+  waitForNetworkIdle(page, timeout=1000, maxInflightRequests = 0) {
+    page.on('request', onRequestStarted);
+    page.on('requestfinished', onRequestFinished);
+    page.on('requestfailed', onRequestFinished);
+
+    let inflight = 0;
+    let fulfill;
+    let promise = new Promise(x => fulfill = x);
+    let timeoutId = setTimeout(onTimeoutDone, timeout);
+    return promise;
+
+    function onTimeoutDone() {
+      page.removeListener('request', onRequestStarted);
+      page.removeListener('requestfinished', onRequestFinished);
+      page.removeListener('requestfailed', onRequestFinished);
+      fulfill();
+    }
+
+    function onRequestStarted() {
+      ++inflight;
+      if (inflight > maxInflightRequests)
+        clearTimeout(timeoutId);
+    }
+    
+    function onRequestFinished() {
+      if (inflight === 0)
+        return;
+      --inflight;
+      if (inflight === maxInflightRequests)
+        timeoutId = setTimeout(onTimeoutDone, timeout);
+    }
+  }
 }
+
+
+

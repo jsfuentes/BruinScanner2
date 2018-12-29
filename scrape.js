@@ -47,8 +47,8 @@ module.exports = class Jscrape {
       }
     } catch (err) {
       console.log("Error scrapping", scrapeName, ":", err);
-      await scrapper.close();
     }
+    await scrapper.close();
   }
   
 }

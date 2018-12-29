@@ -27,7 +27,6 @@ async function main(headless = true) {
   const secrets = await utils.readSecrets();
   const subjects = await getSubjects(secrets, headless);
   const classDB = await utils.connectToDB(secrets, C.CLASSES_DB);
-  console.log({conf, C});
   for (let i = 0; i < subjects.length; i++) {
     subject = subjects[i];
     console.log("Scraping", subject);
