@@ -1,7 +1,0 @@
-https://sa.ucla.edu/ro/Public/SOC/Results?t=19W&sBy=subject&sName=Aerospace+Studies+%28AERO+ST%29&subj=AERO+ST&crsCatlg=Enter+a+Catalog+Number+or+Class+Title+%28Optional%29&catlg=&cls_no=&btnIsInIndex=btn_inIndex
-https://sa.ucla.edu/ro/Public/SOC/Results?t=19W&sBy=subject&sName=Aerospace+Studies+%28AERO+ST%29&subj=AERO ST&crsCatlg=Enter+a+Catalog+Number+or+Class+Title+%28Optional%29&catlg=&cls_no=&btnIsInIndex=btn_inIndex
-
-https://sa.ucla.edu/ro/Public/SOC/Results?t=19W&sBy=subject&sName=Linguistics+%28LING%29&subj=LING&crsCatlg=Enter+a+Catalog+Number+or+Class+Title+%28Optional%29&catlg=&cls_no=&btnIsInIndex=btn_inIndex
-https://sa.ucla.edu/ro/Public/SOC/Results?t=19W&sBy=subject&sName=Mathematics+%28MATH%29&subj=MATH&crsCatlg=Enter+a+Catalog+Number+or+Class+Title+%28Optional%29&catlg=&cls_no=&btnIsInIndex=btn_inIndex
-https://sa.ucla.edu/aro/Public/SOC/Results?t=19W&sBy=subject&sName=Asian&subj=ASIAN&crsCatlg=Enter+a+Catalog+Number+or+Class+Title+%28Optional%29&catlg=&cls_no=&btnIsInIndex=btn_inIndex
-https://sa.ucla.edu/ro/Public/SOC/Results?t=undefined&sBy=subject&sName=African%2BAmerican%2BStudies%2B%2528AF%2BAMER%2529&subj=AF%20AMER&crsCatlg=Enter%2Ba%2BCatalog%2BNumber%2Bor%2BClass%2BTitle%2B%2528Optional%2529&catlg=&cls_no=&btnIsInIndex=btn_inIndex

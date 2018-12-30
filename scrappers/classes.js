@@ -1,6 +1,5 @@
 const
   C = require('../constants.js'),
-  ObjectID = require('mongodb').ObjectID,
   puppeteer = require('puppeteer'),
   Scrapper = require('./base.js'),
   utils = require('../utils/utils.js');
@@ -8,36 +7,90 @@ const
 const CLASS_BASE_URL = "https://sa.ucla.edu/ro/Public/SOC/Results";
 
 module.exports = class Classes extends Scrapper {
-  constructor(headless, secrets, key) {
-    super(headless, secrets, key);
-    this.classes = [];
-    this.discussions = [];
+  constructor(headless, secrets, subject) {
+    super(headless, secrets, subject);
+    this.classData = []; //array of dicts of lecture and discussions
   }
   
+  //returns array of dicts of lecture and discussions
   async scrape() {
     const url = this.generateUrl();
     
     await this.setup();
     await this.page.goto(url);
 
+    //TODO: check for url failure
     const expandAllS = "#expandAll";
     await this.page.waitForSelector(expandAllS);
     await Promise.all([
       this.page.click(expandAllS),
       this.waitForNetworkIdle(this.page), // similar to 'networkidle0'
     ]);
-    console.log("Network Finished"); //assumption that all divs will be loaded after network idle for 1 second
+    //assumption that all divs will be loaded after network idle for 1 second
     
-    // //click needed classes
-    // const classBlockS = '.head > a';
-    // await this.page.waitForSelector(classBlockS);
-    // const classArr = await this.page.$$(classBlockS);
-    // for (let i = 0; i < classArr.length; i++) {
-    //   const curClassNode = classArr[i];
-    //   const title = await this.page.evaluate(e => e.textContent, curClassNode);
-    //   // Example
-    // 
-    // }
+    //get and parse each classBlock 
+    const classBlockS = '.class-title';
+    const classArr = await this.page.$$(classBlockS);
+    for (let i = 0; i < classArr.length; i++) {
+      const classBlock = classArr[i];
+      await this.parseClassBlock(classBlock); //data added at lowest level of ft call
+    }
+
+    //TODO: Get multiple page classes    
+    return this.classData;
+  }
+  
+  //call parse each lecture block
+  async parseClassBlock(classBlock) {
+    const className = await this.page.evaluate(e => e.querySelector('a').textContent, classBlock);
+    const lectureArr = await classBlock.$$('.primary-row');
+    for (let i = 0; i < lectureArr.length; i++) {
+      const lectureBlock = lectureArr[i];
+      await this.parseLectureBlock(lectureBlock, className);
+    }
+  }
+  
+  //actually parsing of data
+  async parseLectureBlock(lectureBlock, className) {
+    const data = await this.page.evaluate((e) => {
+      function extractInfo(divs) {
+        const section = divs[1].innerText.trim();
+        const status = divs[2].innerText.trim();
+        const waitlist = divs[3].innerText.trim();
+        const day = divs[5].innerText.trim();
+        const time = divs[6].innerText.trim();
+        const loc = divs[7].innerText.trim();
+        const units = divs[8].innerText.trim();
+        const instructor = divs[9].innerText.trim();
+        
+        return {section, status, waitlist, day, time, loc, units, instructor};
+      }
+      
+      const lectureDivs = e.children;
+      const lecture = extractInfo(lectureDivs);
+      
+      let discussions = [];
+      //if there are discussions, parse them
+      if (lectureDivs.length == 11) {
+        const discussionDiv = lectureDivs[10];
+        const discussionArr = discussionDiv.querySelectorAll('.class-info');
+        for (let i = 0; i < discussionArr.length; i++) {
+          const disDivs = discussionArr[i].children;
+          const dis = extractInfo(disDivs);
+          discussions.push(dis);
+        }
+      }
+
+      return {lecture, discussions};
+    }, lectureBlock);
+    
+    //add class name and subject to data
+    const subject = this.key;
+    data['lecture'] = {...data['lecture'], className, subject}; 
+    data['discussions'] = data['discussions'].map(dis => {return {...dis, className, subject}});
+    
+    console.log(data);
+    this.classData.push(data);
   }
   
   generateUrl() {

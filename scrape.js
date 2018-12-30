@@ -22,16 +22,22 @@ module.exports = class Jscrape {
       
       //TODO: Find a way to do this in parallel with promises
       if(toScrape[0] === C.SCRAPE_ALL || toScrape.indexOf(scrapeName) != -1) {
-        await this.getKeyInfo(scrapeName, scrapeClass, scrapeVersion);
+        try {
+          await this.getKeyInfo(scrapeName, scrapeClass, scrapeVersion);
+        } catch (err) {
+          console.log("Error scrapping", scrapeName, ":", err);
+          console.log("Leaving browser open");
+          return this.allInfo;
+        }
       }
     }
     
     this.allInfo = {
-      "key": this.key,
+      [C.SUBJECTS_KEY]: this.key,
       ...this.allInfo 
     }
     
-    console.log(this.allInfo);
+    // console.log(this.allInfo);
     return this.allInfo;
   }
   
@@ -39,14 +45,10 @@ module.exports = class Jscrape {
   async getKeyInfo(scrapeName, scrapeClass, scrapeVersion) {
     const scrapper = new scrapeClass(this.headless, this.secrets[scrapeName], this.key);
     //TODO: Add date scrapped to dict
-    try {
-      let data = await scrapper.scrape();
-      this.allInfo = {
-        ...this.allInfo,
-        ...data
-      }
-    } catch (err) {
-      console.log("Error scrapping", scrapeName, ":", err);
+    let data = await scrapper.scrape();
+    this.allInfo = {
+      ...this.allInfo,
+      data
     }
     await scrapper.close();
   }
