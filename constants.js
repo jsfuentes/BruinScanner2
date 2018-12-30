@@ -7,6 +7,8 @@ module.exports = {
   //Database Names
   SUBJECTS_DB: "subjects",
   SUBJECTS_KEY: "subjects",
+  CLASS_SUBJECT_KEY: "subject",
+  RAW_CLASSES_DB: "raw_classes",
   CLASSES_DB: "classes",
   DISCUSSION_DB: "discussion",
   

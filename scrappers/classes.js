@@ -18,8 +18,27 @@ module.exports = class Classes extends Scrapper {
     
     await this.setup();
     await this.page.goto(url);
-
     //TODO: check for url failure
+    
+    const pages = await this.page.$$('#divPagination > div > div > div:nth-child(2) > ul > li');
+    if (pages.length == 0) { //no pagination div means there is just one page 
+      await this.parsePage();
+    } else { //handle multiple pages 
+      for (let i = 0; i < pages.length; i++) {
+          const pageDiv = pages[i];
+          await Promise.all([
+            pageDiv.click(),
+            this.waitForNetworkIdle(this.page), //assumption page divs will be loaded after a sec of network idle 
+          ]);
+          await this.parsePage();
+      }
+    }
+    
+    return this.classData;
+  }
+  
+  //only waits for expand page which only matters for first page
+  async parsePage() {
     const expandAllS = "#expandAll";
     await this.page.waitForSelector(expandAllS);
     await Promise.all([
@@ -35,9 +54,6 @@ module.exports = class Classes extends Scrapper {
       const classBlock = classArr[i];
       await this.parseClassBlock(classBlock); //data added at lowest level of ft call
     }
-
-    //TODO: Get multiple page classes    
-    return this.classData;
   }
   
   //call parse each lecture block
@@ -86,10 +102,10 @@ module.exports = class Classes extends Scrapper {
     
     //add class name and subject to data
     const subject = this.key;
-    data['lecture'] = {...data['lecture'], className, subject}; 
-    data['discussions'] = data['discussions'].map(dis => {return {...dis, className, subject}});
+    const subjectAbbr = this.getSubjectAbbr(this.key);
+    data['lecture'] = {...data['lecture'], className, subject, subjectAbbr}; 
+    data['discussions'] = data['discussions'].map(dis => {return {...dis, className, subject, subjectAbbr}});
     
-    console.log(data);
     this.classData.push(data);
   }
   
@@ -126,14 +142,18 @@ module.exports = class Classes extends Scrapper {
   encodeSubj(subject) {
     let subj = subject;
     subj = subj.replace(/ /g, "+");
-    
     //UCLA uses the subString in () if there is one, this does too
+    subj = this.getSubjectAbbr(subj);
+    return subj;
+  }
+  
+  //return abbr of class (if no () then just return)
+  getSubjectAbbr(subj) {
     let subMatch = subj.match(/\(.*\)/);
     if (subMatch !== null) {
       subj = subMatch[0]; //get match
       subj = subj.slice(1, subj.length-1); //remove ( and )
     }
-    
     return subj;
   }
   

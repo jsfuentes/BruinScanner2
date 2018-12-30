@@ -33,7 +33,7 @@ module.exports = class Jscrape {
     }
     
     this.allInfo = {
-      [C.SUBJECTS_KEY]: this.key,
+      [C.CLASS_SUBJECT_KEY]: this.key,
       ...this.allInfo 
     }
     

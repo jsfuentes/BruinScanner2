@@ -26,19 +26,22 @@ async function getSubjects(secrets, headless = true) {
 async function main(headless = true) {
   const secrets = await utils.readSecrets();
   const subjects = await getSubjects(secrets, headless);
-  const classDB = await utils.connectToDB(secrets, C.CLASSES_DB);
+  const classDB = await utils.connectToDB(secrets, C.RAW_CLASSES_DB);
+  
   for (let i = 0; i < subjects.length; i++) {
     subject = subjects[i];
     console.log("Scraping", subject);
 
     let subjectDocs = await classDB.find({
-      [C.SUBJECTS_KEY]: subject
+      [C.CLASS_SUBJECT_KEY]: subject
     }).toArray();
     if (subjectDocs.length == 0) { //TODO: check version number too
       try {
         const jscrape = new Jscrape(subject, headless, secrets);
         const data = await jscrape.scrape();
-        await classDB.insertOne(data);
+        if (data !== {}) {
+          await classDB.insertOne(data);
+        }
       } catch (err) {
         console.log("Failed to scrape", subject, "with", err);
       }
