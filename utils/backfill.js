@@ -1,5 +1,6 @@
 const
   conf = require('./config.js'),
+  C = require('./constants.js'),
   utils = require('./utils/utils.js'),
   jscrape = require('./scrape.js');
 
@@ -7,17 +8,18 @@ const
 //EDIT updateDoc to determine how to update
 //////////////////////
 function updateDoc(d) {
-// e.g 
-// d["newField"] = "newValue"
-// return  d;
+  const date = new Date(); //get current date
+  d["ds"] = date.toISOString();
+  return d;
 }
 
 async function testBackfill(key) {
   const secrets = await utils.readSecrets();
-  const dbData = await utils.connectToData(secrets);
+  const dbData = await utils.connectToDB(secrets, C.RAW_CLASSES_DB);
   
-  const query = {key: key};
+  const query = {[C.CLASS_SUBJECT_KEY]: key};
   let keyDoc = await dbData.find(query).toArray();
+  console.log(keyDoc);
   keyDoc.forEach((d) => {
     const newDoc = updateDoc(d);
     dbData.updateOne(query, {$set: newDoc});
@@ -28,12 +30,12 @@ async function testBackfill(key) {
 
 async function backfillAll() {
   const secrets = await utils.readSecrets();
-  const dbData = await utils.connectToData(secrets);
+  const dbData = await utils.connectToDB(secrets, C.RAW_CLASSES_DB);
   // const dbSanitizedData = await utils.connectToSanitizedData(secrets);
   
   let keyDoc = await dbData.find().toArray();
   keyDoc.forEach((d) => {
-    const query = {key: d['key']};
+    const query = {[C.CLASS_SUBJECT_KEY]: d[C.CLASS_SUBJECT_KEY]};
     const newDoc = updateDoc(d);
     dbData.updateOne(query, {$set: newDoc});
   });
@@ -41,5 +43,4 @@ async function backfillAll() {
   console.log("Backfill All complete");
 }
 
-// testBackfill('medium');
 backfillAll();

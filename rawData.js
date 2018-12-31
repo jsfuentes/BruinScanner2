@@ -39,7 +39,7 @@ async function main(headless = true) {
       try {
         const jscrape = new Jscrape(subject, headless, secrets);
         const data = await jscrape.scrape();
-        if (data !== {}) {
+        if (Object.keys(data).length !== 0) { //check if dictionary is not empty 
           await classDB.insertOne(data);
         }
       } catch (err) {

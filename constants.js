@@ -9,6 +9,7 @@ module.exports = {
   SUBJECTS_KEY: "subjects",
   CLASS_SUBJECT_KEY: "subject",
   RAW_CLASSES_DB: "raw_classes",
+  PROCESSED_CLASSES_DB: "processed_classes",
   CLASSES_DB: "classes",
   DISCUSSION_DB: "discussion",
   

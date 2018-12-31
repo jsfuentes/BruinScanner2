@@ -39,6 +39,7 @@ module.exports = class Classes extends Scrapper {
   
   //only waits for expand page which only matters for first page
   async parsePage() {
+    //TODO: find if the page has nothing
     const expandAllS = "#expandAll";
     await this.page.waitForSelector(expandAllS);
     await Promise.all([
