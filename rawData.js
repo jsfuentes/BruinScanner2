@@ -1,7 +1,6 @@
 const
   C = require('./constants.js'),
-  conf = require('./config.js'),
-  Jscrape = require('./scrape.js'),
+  ClassScrapper = require('./scrappers/classes.js'),
   SubjectScrapper = require('./scrappers/subjects.js'),
   assert = require('assert'),
   utils = require('./utils/utils.js');
@@ -23,6 +22,24 @@ async function getSubjects(secrets, headless = true) {
   return subjects;
 }
 
+async function getClasses(headless, secrets, subject) {
+  const scrapper = new ClassScrapper(headless, secrets, subject);
+  //TODO: Add date scrapped to dict
+  let data = await scrapper.scrape();
+  await scrapper.close();
+  if (Object.keys(data).length === 0) { //check if dictionary is empty 
+    return null;
+  }
+  const date = new Date(); //get current date
+  data = {
+    [C.CLASS_SUBJECT_KEY]: subject, 
+    "ds": date.toISOString(),
+    ...data
+  }
+
+  return data;
+}
+
 async function main(headless = true) {
   const secrets = await utils.readSecrets();
   const subjects = await getSubjects(secrets, headless);
@@ -37,16 +54,14 @@ async function main(headless = true) {
     }).toArray();
     if (subjectDocs.length == 0) { //TODO: check version number too
       try {
-        const jscrape = new Jscrape(subject, headless, secrets);
-        const data = await jscrape.scrape();
-        if (Object.keys(data).length !== 0) { //check if dictionary is not empty 
+        const data = await getClasses(headless, secrets, subject);
+        if (data !== null) {
           await classDB.insertOne(data);
         }
       } catch (err) {
         console.log("Failed to scrape", subject, "with", err);
       }
 
-      await utils.randomDelay();
       await utils.randomDelay();
     }
   }

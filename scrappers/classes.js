@@ -7,7 +7,7 @@ const
 const CLASS_BASE_URL = "https://sa.ucla.edu/ro/Public/SOC/Results";
 
 module.exports = class Classes extends Scrapper {
-  constructor(headless, secrets, subject) {
+  constructor(headless, secrets, subject) { //TODO: Add all option here or a specific class name
     super(headless, secrets, subject);
     this.classData = []; //array of dicts of lecture and discussions
   }
@@ -60,6 +60,7 @@ module.exports = class Classes extends Scrapper {
   //call parse each lecture block
   async parseClassBlock(classBlock) {
     const className = await this.page.evaluate(e => e.querySelector('a').textContent, classBlock);
+    //TODO: add class filter right here to only get the class you want to scrape :O
     const lectureArr = await classBlock.$$('.primary-row');
     for (let i = 0; i < lectureArr.length; i++) {
       const lectureBlock = lectureArr[i];

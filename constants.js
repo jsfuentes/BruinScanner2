@@ -1,8 +1,5 @@
 module.exports = {
-  TERM: "19W", //TODO: Generate this
-  
-  //Scrapper Names
-  CLASSES: "CLASSES",//SAMPLE
+  TERM: "19W", //TODO: Make this a variable rather than a constant 
   
   //Database Names
   SUBJECTS_DB: "subjects",
@@ -12,7 +9,4 @@ module.exports = {
   PROCESSED_CLASSES_DB: "processed_classes",
   CLASSES_DB: "classes",
   DISCUSSION_DB: "discussion",
-  
-  //OTHER 
-  SCRAPE_ALL: "All" //Option to scrape using everything in config
 }

@@ -1,5 +1,4 @@
 const
-  conf = require('./config.js'),
   C = require('./constants.js'),
   utils = require('./utils/utils.js'),
   jscrape = require('./scrape.js');
