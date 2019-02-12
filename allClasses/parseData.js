@@ -13,7 +13,7 @@ const
 //  clsId - referencing cls object in other class db
 //  lecture- bool whether passed unit is a lecture
 //return: array of l/d, usually 1 
-function parseLD(ld, clsId, isLecture) {
+function parseLD(ld, classId, isLecture) {
   let lds = [];
 
   const locs = ld.loc.split("\n");
@@ -31,7 +31,7 @@ function parseLD(ld, clsId, isLecture) {
     let loc = locs[i].trim();
     assert(times[i] != undefined, "times[i] != undefined");
     let timeObj = militaryTime.parseTime(times[i]);
-    let newLd = Object.assign({}, ld, timeObj, {loc: loc, day: day, class_id: clsId}); //{} first creates new Object
+    let newLd = Object.assign({}, ld, timeObj, {loc, day, classId, isLecture}); //{} first creates new Object
     delete newLd.time;
     lds.push(newLd);
   }
