@@ -5,7 +5,8 @@ module.exports = {
   SUBJECTS_DB: "subjects",
   RAW_CLASSES_DB: "raw_classes",
   CLASSES_DB: "classes",
-  LECTURE_AND_DISCUSSION_DB: "all_lecture_disc",
+  LECTURE_AND_DISCUSSION_DB: "regular_lecture_disc",
+  CLASSROOM_DB: "classrooms",
   
   //Database keys
   SUBJECTS_KEY: "subjects",
