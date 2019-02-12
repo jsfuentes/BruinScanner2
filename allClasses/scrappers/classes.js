@@ -21,8 +21,13 @@ module.exports = class Classes extends Scrapper {
     //TODO: check for url failure
     
     const pages = await this.page.$$('#divPagination > div > div > div:nth-child(2) > ul > li');
-    if (pages.length == 0) { //no pagination div means there is just one page 
-      await this.parsePage();
+    if (pages.length == 0) { //no pagination div means there is just one page or nothing
+      try {
+        await this.page.waitForSelector("#spanNoSearchResults", { timeout: 5000 });
+        return this.classData; //empty page 
+      } catch (err) {}
+      
+      await this.parsePage(); //one page
     } else { //handle multiple pages 
       for (let i = 0; i < pages.length; i++) {
           const pageDiv = pages[i];
