@@ -3,7 +3,7 @@ module.exports = {
   
   //Database Names
   SUBJECTS_DB: "subjects",
-  RAW_CLASSES_DB: "raw_classes",
+  RAW_CLASSES_DB: "raw_classes_W19",
   CLASSES_DB: "classes",
   LECTURE_AND_DISCUSSION_DB: "regular_lecture_disc",
   CLASSROOM_DB: "classrooms",

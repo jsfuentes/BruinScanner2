@@ -68,7 +68,7 @@ async function main(headless = true) {
 
 }
 
-main(false)
+main()
   .then(() => {
     console.log("COMPLETE");
     // process.exit();
