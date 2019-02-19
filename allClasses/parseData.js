@@ -1,8 +1,8 @@
 const
   assert = require('assert'),
-  C = require('./constants.js'),
+  C = require('../constants.js'),
   militaryTime = require('./utils/militaryTime.js'),
-  utils = require('./utils/utils.js');
+  utils = require('../utils.js');
 
 //Apparently if you have day == 'Not scheduled' || day == "Varies" then the time and loc are empty strings(unless loc == Online in rare case)
 //Unless!, there is two locs in which case if you split by \n you wont get an empty string for the 2nd loc/time 

@@ -1,9 +1,9 @@
 const
-  C = require('./constants.js'),
+  C = require('../constants.js'),
   ClassScrapper = require('./scrappers/classes.js'),
   SubjectScrapper = require('./scrappers/subjects.js'),
   assert = require('assert'),
-  utils = require('./utils/utils.js');
+  utils = require('../utils.js');
 
 async function getSubjects(secrets, headless = true) {
   const db = await utils.connectToDB(secrets, C.SUBJECTS_DB);

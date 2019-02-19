@@ -1,8 +1,8 @@
 const
-  C = require('../constants.js'),
+  C = require('../../constants.js'),
   puppeteer = require('puppeteer'),
   Scrapper = require('./base.js'),
-  utils = require('../utils/utils.js');
+  utils = require('../../utils.js');
 
 const CLASS_BASE_URL = "https://sa.ucla.edu/ro/Public/SOC/Results";
 

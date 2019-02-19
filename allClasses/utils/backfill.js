@@ -1,6 +1,6 @@
 const
-  C = require('./constants.js'),
-  utils = require('./utils/utils.js'),
+  C = require('../constants.js'),
+  utils = require('../../utils.js'),
   jscrape = require('./scrape.js');
 
 ///////////////////////

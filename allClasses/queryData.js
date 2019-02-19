@@ -1,7 +1,7 @@
 const
   assert = require('assert'),
-  C = require('./constants.js'),
-  utils = require('./utils/utils.js');
+  C = require('../constants.js'),
+  utils = require('../utils.js');
   
 const ts = "1301";
 const day = "T";
@@ -71,14 +71,14 @@ async function queryClasses(ts, day) {
   console.log(clss.sort());
   return clss.sort();
 }
-  
+// 
 // queryEmptyClassrooms(ts, day).then((e) => {
 //   console.log(e);
 //   console.log("DONE");
 // }).catch( (fromReject) => {
 //   console.log("ERR" + fromReject);
 // });
-    
+// 
 // queryClasses(ts, day).then((e) => {
 //   console.log(e);
 //   console.log("DONE");
